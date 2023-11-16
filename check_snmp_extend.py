@@ -16,7 +16,8 @@
 
 from sys import exit
 from sys import argv
-import commands, signal
+# Use subprocess instead of commands
+import subprocess, signal
 from optparse import OptionParser
 
 
@@ -146,12 +147,12 @@ def check_snmp_extend():
 	
 	timeoutstr="Timeout: No Response from " + options.host
 	noexecstr="::nsExtendResult = No Such Instance currently exists at this OID"
-        if options.snmp_version == '3':
+	if options.snmp_version == '3':
 		snmp_request="snmpwalk -v%s -u %s -l %s -a %s -A %s -x %s -X %s -OQ %s 'NET-SNMP-EXTEND-MIB::nsExtendResult'" % (options.snmp_version, options.snmp_user, options.snmp_seclevel, options.snmp_authproto, options.snmp_authpass, options.snmp_privproto, options.snmp_privpass, options.host)
 	else:
 		snmp_request="snmpwalk -v%s -c %s -OQ %s 'NET-SNMP-EXTEND-MIB::nsExtendResult'" % (options.snmp_version, options.community, options.host)
 	
-	results=commands.getoutput(snmp_request).split("NET-SNMP-EXTEND-MIB")
+	results=subprocess.getoutput(snmp_request).split("NET-SNMP-EXTEND-MIB")
 	if options.debug:
 		debug("snmp request: %s" % (snmp_request))
 		debug(results)
@@ -166,7 +167,7 @@ def check_snmp_extend():
 	else:
 		snmp_request="snmpwalk -v%s -c %s -OQ %s 'NET-SNMP-EXTEND-MIB::nsExtendOutputFull'" % (options.snmp_version, options.community, options.host)
 
-	outputs=commands.getoutput(snmp_request).split("NET-SNMP-EXTEND-MIB")
+	outputs=subprocess.getoutput(snmp_request).split("NET-SNMP-EXTEND-MIB")
 	if options.debug:
 		debug("snmp request: %s" % (snmp_request))
 		debug(outputs)
@@ -269,7 +270,7 @@ def check_this_snmp_extend():
 	else:
 		snmp_request="snmpwalk -v%s -c %s -OQv %s 'NET-SNMP-EXTEND-MIB::nsExtendResult.\"%s\"'" % (options.snmp_version, options.community, options.host, options.extend_name)
 
-	result=commands.getoutput(snmp_request)
+	result=subprocess.getoutput(snmp_request)
 	if options.debug:
 		debug("snmp request: %s" % (snmp_request))
 		debug(result)
@@ -284,7 +285,7 @@ def check_this_snmp_extend():
 	else:
 		snmp_request="snmpwalk -v%s -c %s -OQv %s 'NET-SNMP-EXTEND-MIB::nsExtendOutputFull.\"%s\"'" % (options.snmp_version, options.community, options.host, options.extend_name)
 
-	output=commands.getoutput(snmp_request)
+	output=subprocess.getoutput(snmp_request)
 	if options.debug:
 		debug("snmp request: %s" % (snmp_request))
 		debug(output)
@@ -398,7 +399,7 @@ def parse_options():
 #	print error text
 ###################################################
 def error(errortext, exit_code=unknown):
-	print "* Error: %s" % errortext
+	print("* Error: %s" % errortext)
 	#print_help()
 	#:print "* Error: %s" % errortext
 	exit(exit_codes[exit_code])
@@ -409,7 +410,7 @@ def error(errortext, exit_code=unknown):
 #	print debug text
 ###################################################
 def debug( debugtext ):
-	print	debugtext
+	print(debugtext)
 
 ###################################################
 #				
@@ -484,7 +485,7 @@ def end():
 	else:
 		message = "%s" % (summary)
 		exit_code = overall_status
-	print message
+	print(message)
 	
 	exit(exit_code)
 	
